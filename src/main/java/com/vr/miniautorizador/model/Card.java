@@ -16,7 +16,8 @@ public class Card {
 
     private String password;
 
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private CardType type;
 
     private boolean status;
 
@@ -24,7 +25,7 @@ public class Card {
 
     public Card(CardDTO newCardCandidate) {
         this.number = CardGenerator.generateCardNumber();
-        this.type = newCardCandidate.getType().name();
+        this.type = newCardCandidate.getType();
         this.password = newCardCandidate.getPassword();
     }
 
@@ -32,7 +33,7 @@ public class Card {
         return number;
     }
 
-    public String getType() {
+    public CardType getType() {
         return type;
     }
 }
