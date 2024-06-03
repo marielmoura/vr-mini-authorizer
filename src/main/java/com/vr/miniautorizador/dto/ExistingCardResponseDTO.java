@@ -1,6 +1,6 @@
 package com.vr.miniautorizador.dto;
 
-public record ExistingCardResponse(
+public record ExistingCardResponseDTO(
         String senha,
         String numeroCartao) {
 }

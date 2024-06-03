@@ -1,5 +1,6 @@
 package com.vr.miniautorizador.handlers;
 
+import jakarta.validation.UnexpectedTypeException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -37,7 +38,18 @@ public class GlobalExceptionHandler {
             WebRequest request) {
 
         Map<String, Object> body = new HashMap<>();
-        body.put("type", "Tipo de cartão inválido. Por favor, escolha entre REFEICAO e ALIMENTACAO, sem acentos");
+        body.put("type", "Tipo inválido");
+
+        return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler({UnexpectedTypeException.class})
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(
+            UnexpectedTypeException ex,
+            WebRequest request) {
+
+        Map<String, Object> body = new HashMap<>();
+        body.put("type", ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }

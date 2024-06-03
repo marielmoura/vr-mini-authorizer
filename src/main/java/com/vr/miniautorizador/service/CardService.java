@@ -1,6 +1,6 @@
 package com.vr.miniautorizador.service;
 
-import com.vr.miniautorizador.dto.NewCardRequest;
+import com.vr.miniautorizador.dto.NewCardRequestDTO;
 import com.vr.miniautorizador.model.Card;
 import com.vr.miniautorizador.model.Transaction;
 import com.vr.miniautorizador.repository.CardRepository;
@@ -30,7 +30,7 @@ public class CardService {
     }
 
     @Transactional
-    public NewCardRequest create(NewCardRequest newCardCandidate) {
+    public NewCardRequestDTO create(NewCardRequestDTO newCardCandidate) {
         cardRepository.findByNumber(newCardCandidate.numeroCartao()).ifPresent(card -> {
             throw new CardAlreadyExistsException(card.getNumber());
         });

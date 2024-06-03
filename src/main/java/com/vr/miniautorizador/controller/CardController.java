@@ -1,6 +1,6 @@
 package com.vr.miniautorizador.controller;
 
-import com.vr.miniautorizador.dto.NewCardRequest;
+import com.vr.miniautorizador.dto.NewCardRequestDTO;
 import com.vr.miniautorizador.service.CardAlreadyExistsException;
 import com.vr.miniautorizador.service.CardNotFoundException;
 import com.vr.miniautorizador.service.CardService;
@@ -23,7 +23,7 @@ public class CardController {
     }
 
     @PostMapping
-    public ResponseEntity<NewCardRequest> create(@Valid @RequestBody NewCardRequest newCardCandidate) {
+    public ResponseEntity<NewCardRequestDTO> create(@Valid @RequestBody NewCardRequestDTO newCardCandidate) {
         try {
             return new ResponseEntity<>(cardService.create(newCardCandidate), HttpStatus.CREATED);
         } catch (DataAccessException e) {

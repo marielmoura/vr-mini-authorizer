@@ -1,6 +1,6 @@
 package com.vr.miniautorizador.model;
 
-import com.vr.miniautorizador.dto.NewCardRequest;
+import com.vr.miniautorizador.dto.NewCardRequestDTO;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,7 +16,7 @@ public class Card {
 
     public Card() {}
 
-    public Card(NewCardRequest newCardCandidate) {
+    public Card(NewCardRequestDTO newCardCandidate) {
         this.number = newCardCandidate.numeroCartao();
         this.password = newCardCandidate.senha();
     }
@@ -29,8 +29,8 @@ public class Card {
         return password;
     }
 
-    public NewCardRequest toDTO() {
-        return new NewCardRequest(number, password);
+    public NewCardRequestDTO toDTO() {
+        return new NewCardRequestDTO(number, password);
     }
 
     public Long getId() {
