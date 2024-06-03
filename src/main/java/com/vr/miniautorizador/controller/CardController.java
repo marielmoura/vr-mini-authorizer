@@ -9,10 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Validated
@@ -25,11 +22,21 @@ public class CardController {
         this.cardService = cardService;
     }
 
-    @RequestMapping(method = RequestMethod.POST)
+    @PostMapping
     public ResponseEntity<String> create(@Valid @RequestBody CardDTO newCardCandidate) {
         try {
             String statusMessage = cardService.create(newCardCandidate);
             return new ResponseEntity<>(statusMessage, HttpStatus.CREATED);
+        } catch (DataAccessException e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @GetMapping("/{cardId}")
+    public ResponseEntity<String> getAmount(@PathVariable Long cardId) {
+        try {
+            String statusMessage = cardService.getBalance(cardId);
+            return new ResponseEntity<>(statusMessage, HttpStatus.OK);
         } catch (DataAccessException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }

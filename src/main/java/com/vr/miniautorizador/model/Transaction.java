@@ -26,5 +26,7 @@ public class Transaction {
         this.transactionType = transactionType;
     }
 
-    // Getters and setters...
+    public Card getCard() {
+        return card;
+    }
 }

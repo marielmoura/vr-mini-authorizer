@@ -36,4 +36,8 @@ public class Card {
     public CardType getType() {
         return type;
     }
+
+    public Long getId() {
+        return id;
+    }
 }
