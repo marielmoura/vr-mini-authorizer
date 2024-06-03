@@ -7,6 +7,7 @@ import com.vr.miniautorizador.repository.CardRepository;
 import com.vr.miniautorizador.repository.TransactionRepository;
 import com.vr.miniautorizador.service.exceptions.InsufficientCardBalanceException;
 import com.vr.miniautorizador.service.exceptions.InvalidCardPasswordException;
+import com.vr.miniautorizador.service.exceptions.TransactionAmountZeroException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,7 +22,8 @@ public class TransactionService {
     }
 
     @Transactional
-    public Transaction create(TransactionRequestDTO transactionRequestDTO) throws InvalidCardPasswordException, InsufficientCardBalanceException {
+    public Transaction create(TransactionRequestDTO transactionRequestDTO) throws InvalidCardPasswordException, InsufficientCardBalanceException, TransactionAmountZeroException {
+        checkAmountValue(transactionRequestDTO);
         Card foundCard = cardService.findValidCard(transactionRequestDTO.getCardNumber());
         cardService.checkCardPassword(foundCard, transactionRequestDTO);
         checkCardBalance(transactionRequestDTO);
@@ -36,7 +38,13 @@ public class TransactionService {
             throw new InsufficientCardBalanceException();
     }
 
-    protected boolean isCardBalanceEnough(TransactionRequestDTO transactionRequestDTO) {
+    @Transactional
+    protected void checkAmountValue(TransactionRequestDTO transactionRequestDTO) throws TransactionAmountZeroException {
+        if(transactionRequestDTO.getAmount() == 0)
+            throw new TransactionAmountZeroException();
+    }
+
+    protected Boolean isCardBalanceEnough(TransactionRequestDTO transactionRequestDTO) {
         Double cardBalance = transactionRepository.sumAmountsByCardNumber(transactionRequestDTO.getCardNumber());
         boolean isCardBalanceEnough = cardBalance + transactionRequestDTO.getAmount() >= 0;
         return !transactionRequestDTO.isDeposit() && !isCardBalanceEnough;
