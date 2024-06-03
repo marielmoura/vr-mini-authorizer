@@ -1,8 +1,9 @@
 package com.vr.miniautorizador.controller;
 
 import com.vr.miniautorizador.dto.NewCardRequestDTO;
-import com.vr.miniautorizador.service.CardAlreadyExistsException;
-import com.vr.miniautorizador.service.CardNotFoundException;
+import com.vr.miniautorizador.service.TransactionService;
+import com.vr.miniautorizador.service.exceptions.CardAlreadyExistsException;
+import com.vr.miniautorizador.service.exceptions.CardNotFoundException;
 import com.vr.miniautorizador.service.CardService;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataAccessException;
@@ -17,9 +18,11 @@ import org.springframework.web.bind.annotation.*;
 public class CardController {
 
     private final CardService cardService;
+    private final TransactionService transactionService;
 
-    public CardController(CardService cardService) {
+    public CardController(CardService cardService, TransactionService transactionService) {
         this.cardService = cardService;
+        this.transactionService = transactionService;
     }
 
     @PostMapping
@@ -36,7 +39,7 @@ public class CardController {
     @GetMapping("/{numeroCartao}")
     public ResponseEntity<Double> getAmount(@PathVariable String numeroCartao) {
         try {
-            return new ResponseEntity<>(cardService.getBalance(numeroCartao), HttpStatus.OK);
+            return new ResponseEntity<>(transactionService.getCardBalance(numeroCartao), HttpStatus.OK);
         } catch (DataAccessException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (CardNotFoundException e) {

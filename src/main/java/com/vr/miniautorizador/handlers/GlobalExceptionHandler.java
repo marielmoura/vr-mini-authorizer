@@ -38,7 +38,7 @@ public class GlobalExceptionHandler {
             WebRequest request) {
 
         Map<String, Object> body = new HashMap<>();
-        body.put("type", "Tipo inválido");
+        body.put("type", ex.getMessage());
 
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }

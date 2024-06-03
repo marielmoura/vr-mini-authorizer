@@ -21,8 +21,4 @@ public class Transaction {
         this.card = card;
         this.amount = amount;
     }
-
-    public Card getCard() {
-        return card;
-    }
 }

@@ -5,61 +5,45 @@ import com.vr.miniautorizador.model.Card;
 import com.vr.miniautorizador.model.Transaction;
 import com.vr.miniautorizador.repository.CardRepository;
 import com.vr.miniautorizador.repository.TransactionRepository;
+import com.vr.miniautorizador.service.exceptions.InsufficientCardBalanceException;
+import com.vr.miniautorizador.service.exceptions.InvalidCardPasswordException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class TransactionService {
     private final TransactionRepository transactionRepository;
-    private final CardRepository cardRepository;
+    private final CardService cardService;
 
-    public TransactionService(TransactionRepository transactionRepository, CardRepository cardRepository) {
+    public TransactionService(TransactionRepository transactionRepository, CardRepository cardRepository, CardService cardService) {
         this.transactionRepository = transactionRepository;
-        this.cardRepository = cardRepository;
+        this.cardService = cardService;
     }
 
     @Transactional
-    public Transaction create(TransactionRequestDTO transactionRequestDTO) throws InvalidPasswordException {
-        Card foundCard = cardRepository.findByNumber(transactionRequestDTO.getCardNumber())
-                .orElseThrow(CardNotFoundException::new);
+    public Transaction create(TransactionRequestDTO transactionRequestDTO) throws InvalidCardPasswordException, InsufficientCardBalanceException {
+        Card foundCard = cardService.findValidCard(transactionRequestDTO.getCardNumber());
+        cardService.checkCardPassword(foundCard, transactionRequestDTO);
+        checkCardBalance(transactionRequestDTO);
 
-        boolean validPassword = foundCard.isValidPassword(transactionRequestDTO.getPassword());
-        return validPassword ? create(foundCard, transactionRequestDTO.getAmount()) : throwInvalidPasswordException();
-    }
-
-    private static Transaction throwInvalidPasswordException() throws InvalidPasswordException {
-        throw new InvalidPasswordException();
-    }
-
-    public Transaction create(Card card, double amount) {
-        Transaction transaction = new Transaction(card, amount);
-        return transactionRepository.save(transaction);
+        Transaction transactionCandidate = new Transaction(foundCard, transactionRequestDTO.getAmount());
+        return transactionRepository.save(transactionCandidate);
     }
 
     @Transactional
-    public Double getAmount(Card card) {
-        return transactionRepository.sumAmounts(card.getId());
+    protected void checkCardBalance(TransactionRequestDTO transactionRequestDTO) throws InsufficientCardBalanceException {
+        if(isCardBalanceEnough(transactionRequestDTO))
+            throw new InsufficientCardBalanceException();
     }
 
-//    @Transactional
-//    public Transaction deposit(Card card, double amount) {
-//        if (amount < 0) {
-//            throw new IllegalArgumentException("The deposit amount must be positive.");
-//        }
-//
-//        return create(card, amount);
-//    }
-//
-//    @Transactional
-//    public Transaction withdraw(Card card, double amount) {
-//        if (amount < 0) {
-//            throw new IllegalArgumentException("The withdrawal amount must be positive.");
-//        }
-//        double existingBalance = getAmount(card);
-//        if (existingBalance < amount) {
-//            throw new IllegalArgumentException("Insufficient balance.");
-//        }
-//
-//        return create(card, -amount);
-//    }
+    protected boolean isCardBalanceEnough(TransactionRequestDTO transactionRequestDTO) {
+        Double cardBalance = transactionRepository.sumAmountsByCardNumber(transactionRequestDTO.getCardNumber());
+        boolean isCardBalanceEnough = cardBalance + transactionRequestDTO.getAmount() >= 0;
+        return !transactionRequestDTO.isDeposit() && !isCardBalanceEnough;
+    }
+
+    public Double getCardBalance(String cardNumber) {
+        Card card = cardService.findValidCard(cardNumber);
+        return transactionRepository.sumAmountsByCardNumber(card.getNumber());
+    }
 }

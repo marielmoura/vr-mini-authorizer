@@ -1,6 +1,7 @@
 package com.vr.miniautorizador.model;
 
 import com.vr.miniautorizador.dto.NewCardRequestDTO;
+import com.vr.miniautorizador.dto.TransactionRequestDTO;
 import jakarta.persistence.*;
 
 @Entity
@@ -25,19 +26,11 @@ public class Card {
         return number;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
     public NewCardRequestDTO toDTO() {
         return new NewCardRequestDTO(number, password);
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public boolean isValidPassword(String inputPassword) {
-        return this.password.equals(inputPassword);
+    public boolean isValidPassword(TransactionRequestDTO transactionRequestDTO) {
+        return this.password.equals(transactionRequestDTO.getPassword());
     }
 }

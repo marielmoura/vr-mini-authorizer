@@ -6,7 +6,6 @@ import org.springframework.data.repository.query.Param;
 
 public interface TransactionRepository extends JpaRepository<Transaction, Long> {
 
-    @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.card.id = :cardId")
-    Double sumAmounts(@Param("cardId") Long cardId);
-
+    @Query("SELECT SUM(t.amount) FROM Transaction t WHERE t.card.number = :cardNumber")
+    Double sumAmountsByCardNumber(@Param("cardNumber") String cardNumber);
 }

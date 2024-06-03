@@ -1,16 +1,14 @@
 package com.vr.miniautorizador.controller;
 
 import com.vr.miniautorizador.dto.TransactionRequestDTO;
-import com.vr.miniautorizador.service.CardNotFoundException;
-import com.vr.miniautorizador.service.InvalidPasswordException;
+import com.vr.miniautorizador.service.exceptions.CardNotFoundException;
+import com.vr.miniautorizador.service.exceptions.InsufficientCardBalanceException;
+import com.vr.miniautorizador.service.exceptions.InvalidCardPasswordException;
 import com.vr.miniautorizador.service.TransactionService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/transacoes")
@@ -23,11 +21,11 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody TransactionRequestDTO transactionRequestDTO) {
+    public ResponseEntity<?> create(@Valid @RequestBody TransactionRequestDTO transactionCandidate) {
         try {
-            transactionService.create(transactionRequestDTO);
+            transactionService.create(transactionCandidate);
             return new ResponseEntity<>("OK", HttpStatus.CREATED);
-        } catch (InvalidPasswordException | CardNotFoundException e) {
+        } catch (InvalidCardPasswordException | InsufficientCardBalanceException | CardNotFoundException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }

@@ -1,5 +1,6 @@
 package com.vr.miniautorizador.dto;
 
+import com.vr.miniautorizador.model.Transaction;
 import jakarta.validation.constraints.*;
 
 public class TransactionRequestDTO {
@@ -30,5 +31,9 @@ public class TransactionRequestDTO {
 
     public double getAmount() {
         return valor;
+    }
+
+    public boolean isDeposit() {
+        return valor > 0;
     }
 }
