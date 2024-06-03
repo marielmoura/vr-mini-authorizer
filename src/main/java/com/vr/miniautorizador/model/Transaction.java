@@ -15,15 +15,11 @@ public class Transaction {
 
     private double amount;
 
-    @Enumerated(EnumType.STRING)
-    private TransactionType transactionType;
-
     public Transaction() {}
 
-    public Transaction(Card card, double amount, TransactionType transactionType) {
+    public Transaction(Card card, double amount) {
         this.card = card;
         this.amount = amount;
-        this.transactionType = transactionType;
     }
 
     public Card getCard() {

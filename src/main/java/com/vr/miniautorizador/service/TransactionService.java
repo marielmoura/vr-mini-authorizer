@@ -1,8 +1,9 @@
 package com.vr.miniautorizador.service;
 
+import com.vr.miniautorizador.dto.TransactionRequest;
 import com.vr.miniautorizador.model.Card;
 import com.vr.miniautorizador.model.Transaction;
-import com.vr.miniautorizador.model.TransactionType;
+import com.vr.miniautorizador.repository.CardRepository;
 import com.vr.miniautorizador.repository.TransactionRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,14 +11,28 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 public class TransactionService {
     private final TransactionRepository transactionRepository;
+    private final CardRepository cardRepository;
 
-    public TransactionService(TransactionRepository transactionRepository) {
+    public TransactionService(TransactionRepository transactionRepository, CardRepository cardRepository) {
         this.transactionRepository = transactionRepository;
+        this.cardRepository = cardRepository;
     }
 
     @Transactional
-    public Transaction create(Card card, double amount, TransactionType transactionType) {
-        Transaction transaction = new Transaction(card, amount, transactionType);
+    public Transaction create(TransactionRequest transactionRequest) throws InvalidPasswordException {
+        Card foundCard = cardRepository.findByNumber(transactionRequest.getCardNumber())
+                .orElseThrow(CardNotFoundException::new);
+
+        boolean validPassword = foundCard.isValidPassword(transactionRequest.getPassword());
+        return validPassword ? create(foundCard, transactionRequest.getAmount()) : throwInvalidPasswordException();
+    }
+
+    private static Transaction throwInvalidPasswordException() throws InvalidPasswordException {
+        throw new InvalidPasswordException();
+    }
+
+    public Transaction create(Card card, double amount) {
+        Transaction transaction = new Transaction(card, amount);
         return transactionRepository.save(transaction);
     }
 
@@ -32,7 +47,7 @@ public class TransactionService {
             throw new IllegalArgumentException("The deposit amount must be positive.");
         }
 
-        return create(card, amount, TransactionType.DEPOSIT);
+        return create(card, amount);
     }
 
     @Transactional
@@ -45,6 +60,6 @@ public class TransactionService {
             throw new IllegalArgumentException("Insufficient balance.");
         }
 
-        return create(card, -amount, TransactionType.WITHDRAWAL);
+        return create(card, -amount);
     }
 }

@@ -1,9 +1,7 @@
 package com.vr.miniautorizador.model;
 
-import com.vr.miniautorizador.dto.CardDTO;
-import com.vr.miniautorizador.service.CardGenerator;
+import com.vr.miniautorizador.dto.NewCardRequest;
 import jakarta.persistence.*;
-import org.springframework.data.relational.core.mapping.Table;
 
 @Entity
 public class Card {
@@ -16,28 +14,30 @@ public class Card {
 
     private String password;
 
-    @Enumerated(EnumType.STRING)
-    private CardType type;
-
-    private boolean status;
-
     public Card() {}
 
-    public Card(CardDTO newCardCandidate) {
-        this.number = CardGenerator.generateCardNumber();
-        this.type = newCardCandidate.getType();
-        this.password = newCardCandidate.getPassword();
+    public Card(NewCardRequest newCardCandidate) {
+        this.number = newCardCandidate.numeroCartao();
+        this.password = newCardCandidate.senha();
     }
 
     public String getNumber() {
         return number;
     }
 
-    public CardType getType() {
-        return type;
+    public String getPassword() {
+        return password;
+    }
+
+    public NewCardRequest toDTO() {
+        return new NewCardRequest(number, password);
     }
 
     public Long getId() {
         return id;
+    }
+
+    public boolean isValidPassword(String inputPassword) {
+        return this.password.equals(inputPassword);
     }
 }

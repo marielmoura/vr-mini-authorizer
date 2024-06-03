@@ -1,19 +1,19 @@
 package com.vr.miniautorizador.controller;
 
-import com.vr.miniautorizador.dto.CardDTO;
-import com.vr.miniautorizador.model.Card;
+import com.vr.miniautorizador.dto.NewCardRequest;
+import com.vr.miniautorizador.service.CardAlreadyExistsException;
+import com.vr.miniautorizador.service.CardNotFoundException;
 import com.vr.miniautorizador.service.CardService;
 import jakarta.validation.Valid;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @Validated
-@RequestMapping("/api/card")
+@RequestMapping("/cartoes")
 public class CardController {
 
     private final CardService cardService;
@@ -23,22 +23,24 @@ public class CardController {
     }
 
     @PostMapping
-    public ResponseEntity<String> create(@Valid @RequestBody CardDTO newCardCandidate) {
+    public ResponseEntity<NewCardRequest> create(@Valid @RequestBody NewCardRequest newCardCandidate) {
         try {
-            String statusMessage = cardService.create(newCardCandidate);
-            return new ResponseEntity<>(statusMessage, HttpStatus.CREATED);
+            return new ResponseEntity<>(cardService.create(newCardCandidate), HttpStatus.CREATED);
         } catch (DataAccessException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (CardAlreadyExistsException e) {
+            return new ResponseEntity<>(newCardCandidate, HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }
 
-    @GetMapping("/{cardId}")
-    public ResponseEntity<String> getAmount(@PathVariable Long cardId) {
+    @GetMapping("/{numeroCartao}")
+    public ResponseEntity<Double> getAmount(@PathVariable String numeroCartao) {
         try {
-            String statusMessage = cardService.getBalance(cardId);
-            return new ResponseEntity<>(statusMessage, HttpStatus.OK);
+            return new ResponseEntity<>(cardService.getBalance(numeroCartao), HttpStatus.OK);
         } catch (DataAccessException e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        } catch (CardNotFoundException e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
     }
 }
