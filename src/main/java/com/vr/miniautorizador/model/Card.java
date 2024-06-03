@@ -4,6 +4,10 @@ import com.vr.miniautorizador.dto.NewCardRequestDTO;
 import com.vr.miniautorizador.dto.TransactionRequestDTO;
 import jakarta.persistence.*;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Base64;
+
 @Entity
 public class Card {
 
@@ -19,7 +23,7 @@ public class Card {
 
     public Card(NewCardRequestDTO newCardCandidate) {
         this.number = newCardCandidate.numeroCartao();
-        this.password = newCardCandidate.senha();
+        this.password = Base64.getEncoder().encodeToString(newCardCandidate.senha().getBytes(StandardCharsets.UTF_8));
     }
 
     public String getNumber() {
@@ -27,10 +31,11 @@ public class Card {
     }
 
     public NewCardRequestDTO toDTO() {
-        return new NewCardRequestDTO(number, password);
+        return new NewCardRequestDTO(number, new String(Base64.getDecoder().decode(password), StandardCharsets.UTF_8));
     }
 
     public boolean isValidPassword(TransactionRequestDTO transactionRequestDTO) {
-        return this.password.equals(transactionRequestDTO.getPassword());
+        String encodedPasswordToCompare = Base64.getEncoder().encodeToString(transactionRequestDTO.getPassword().getBytes(StandardCharsets.UTF_8));
+        return this.password.equals(encodedPasswordToCompare);
     }
 }
