@@ -1,11 +1,8 @@
 package com.vr.miniautorizador.controller;
 
 import com.vr.miniautorizador.dto.TransactionRequestDTO;
-import com.vr.miniautorizador.service.exceptions.CardNotFoundException;
-import com.vr.miniautorizador.service.exceptions.InsufficientCardBalanceException;
-import com.vr.miniautorizador.service.exceptions.InvalidCardPasswordException;
+import com.vr.miniautorizador.service.exceptions.*;
 import com.vr.miniautorizador.service.TransactionService;
-import com.vr.miniautorizador.service.exceptions.TransactionAmountZeroException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,8 +23,7 @@ public class TransactionController {
         try {
             transactionService.create(transactionCandidate);
             return new ResponseEntity<>("OK", HttpStatus.CREATED);
-        } catch (InvalidCardPasswordException | InsufficientCardBalanceException | CardNotFoundException |
-                 TransactionAmountZeroException e) {
+        } catch (InvalidCardNumberException | CardNotFoundException | InvalidCardPasswordException | InsufficientCardBalanceException | TransactionAmountZeroException e) {
             return new ResponseEntity<>(e.getMessage(), HttpStatus.UNPROCESSABLE_ENTITY);
         }
     }

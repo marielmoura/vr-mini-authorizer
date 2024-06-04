@@ -1,7 +1,7 @@
 package com.vr.miniautorizador.service.exceptions;
 
-public class TransactionAmountZeroException extends Throwable {
+public class TransactionAmountZeroException extends RuntimeException {
     public TransactionAmountZeroException() {
-        super("ZERO_IS_NOT_A_VALID_VALUE_FOR_TRANSACTION");
+        super("VALOR_INVALIDO");
     }
 }

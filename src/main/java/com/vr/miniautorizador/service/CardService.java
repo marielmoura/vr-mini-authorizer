@@ -1,25 +1,27 @@
 package com.vr.miniautorizador.service;
 
 import com.vr.miniautorizador.dto.NewCardRequestDTO;
-import com.vr.miniautorizador.dto.TransactionRequestDTO;
 import com.vr.miniautorizador.model.Card;
 import com.vr.miniautorizador.model.Transaction;
 import com.vr.miniautorizador.repository.CardRepository;
 import com.vr.miniautorizador.repository.TransactionRepository;
 import com.vr.miniautorizador.service.exceptions.CardAlreadyExistsException;
 import com.vr.miniautorizador.service.exceptions.CardNotFoundException;
-import com.vr.miniautorizador.service.exceptions.InvalidCardPasswordException;
+import com.vr.miniautorizador.service.exceptions.InvalidCardNumberException;
+import com.vr.miniautorizador.service.validator.CreditCardValidator;
 import jakarta.transaction.Transactional;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
-import java.util.Objects;
+import java.util.Optional;
 
 @Service
 public class CardService {
 
-    private static final String INITIAL_CARD_BALANCE = "vr.miniauthorizer.initial-card-balance";
+    private static final String INITIAL_CARD_BALANCE_PROP = "vr.miniauthorizer.initial-card-balance";
+    private static final double INITIAL_CARD_BALANCE = 500.0;
     private final Environment env;
     private final CardRepository cardRepository;
     private final TransactionRepository transactionRepository;
@@ -32,28 +34,45 @@ public class CardService {
     }
 
     @Transactional
-    public NewCardRequestDTO create(NewCardRequestDTO newCardCandidate) {
+    public NewCardRequestDTO create(NewCardRequestDTO newCardCandidate) throws CardAlreadyExistsException {
+        checkNumberValidity(newCardCandidate.numeroCartao());
         checkForExistingCard(newCardCandidate);
 
         Card newCard = cardRepository.save(newCardCandidate.toModel());
-        double initialValue = Double.parseDouble(Objects.requireNonNull(env.getProperty(INITIAL_CARD_BALANCE)));
-
-        transactionRepository.save(new Transaction(newCard, initialValue));
+        transactionRepository.save(new Transaction(newCard, getInitialCardBalance()));
         return newCard.toDTO();
     }
 
-    private void checkForExistingCard(NewCardRequestDTO newCardCandidate) {
-        cardRepository.findByNumber(newCardCandidate.numeroCartao())
-                .ifPresent(CardAlreadyExistsException::new);
+    private double getInitialCardBalance() {
+        String initialCardBalance = env.getProperty(INITIAL_CARD_BALANCE_PROP);
+        return initialCardBalance != null ? Double.parseDouble(initialCardBalance) : INITIAL_CARD_BALANCE;
     }
 
-    Card findValidCard(String cardNumber) throws CardNotFoundException {
+    @Transactional
+    protected void checkForExistingCard(@NotNull NewCardRequestDTO newCardCandidate) throws CardAlreadyExistsException {
+        Optional<Card> matchingCard = cardRepository.findByNumber(newCardCandidate.numeroCartao());
+        if(matchingCard.isPresent()){
+            throw new CardAlreadyExistsException();
+        }
+    }
+
+    static void checkNumberValidity(@NotNull String cardNumber) throws InvalidCardNumberException {
+        if(!CreditCardValidator.isValid(cardNumber)){
+            throw new InvalidCardNumberException();
+        }
+    }
+
+    @Transactional
+    Card findValid(String cardNumber) throws CardNotFoundException {
         return cardRepository.findByNumber(cardNumber)
                 .orElseThrow(CardNotFoundException::new);
     }
 
-    void checkCardPassword(Card foundCard, TransactionRequestDTO transactionRequestDTO) throws InvalidCardPasswordException {
-        if(!foundCard.isValidPassword(transactionRequestDTO))
-            throw new InvalidCardPasswordException();
+    @Transactional
+    public Double getBalance(String cardNumber) throws CardNotFoundException {
+        Card card = findValid(cardNumber);
+        return transactionRepository.sumAmountsByCardNumber(card.getNumber());
     }
+
+
 }

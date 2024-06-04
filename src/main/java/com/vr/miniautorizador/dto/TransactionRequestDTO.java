@@ -1,7 +1,9 @@
 package com.vr.miniautorizador.dto;
 
-import com.vr.miniautorizador.model.Transaction;
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public class TransactionRequestDTO {
     @NotBlank(message = "O número do cartão não deve estar em branco")
@@ -33,7 +35,11 @@ public class TransactionRequestDTO {
         return valor;
     }
 
-    public boolean isDeposit() {
-        return valor > 0;
+    public boolean isWithdraw() {
+        return valor < 0;
+    }
+
+    public boolean isAmountValid() {
+        return this.valor != 0;
     }
 }
