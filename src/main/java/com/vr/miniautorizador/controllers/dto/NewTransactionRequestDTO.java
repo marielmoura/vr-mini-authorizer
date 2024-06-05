@@ -1,11 +1,11 @@
-package com.vr.miniautorizador.dto;
+package com.vr.miniautorizador.controllers.dto;
 
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
-public class TransactionRequestDTO {
+public class NewTransactionRequestDTO {
     @NotBlank(message = "O número do cartão não deve estar em branco")
     @NotNull(message = "O número do cartão é obrigatório")
     private String numeroCartao;
@@ -17,7 +17,7 @@ public class TransactionRequestDTO {
     @DecimalMax(value = "9999999.99", message = "Valor deve ser numérico")
     private double valor;
 
-    public TransactionRequestDTO(String numeroCartao, String senhaCartao, double valor) {
+    public NewTransactionRequestDTO(String numeroCartao, String senhaCartao, double valor) {
         this.numeroCartao = numeroCartao;
         this.senhaCartao = senhaCartao;
         this.valor = valor;

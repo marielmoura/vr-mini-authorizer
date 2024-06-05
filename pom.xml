@@ -14,7 +14,7 @@
 	<name>miniautorizador</name>
 	<description>Mini autorizador para VR - Desafio</description>
 	<properties>
-		<java.version>22</java.version>
+		<java.version>17</java.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -56,7 +56,7 @@
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
 			<scope>runtime</scope>
-			<version>LATEST</version>
+			<version>RELEASE</version>
 		</dependency>
         <dependency>
             <groupId>org.jetbrains</groupId>

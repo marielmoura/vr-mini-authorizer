@@ -1,4 +1,4 @@
-package com.vr.miniautorizador.service.validator;
+package com.vr.miniautorizador.services.validators;
 
 public class CreditCardValidator {
     public static boolean isValid(String cardNumber) {

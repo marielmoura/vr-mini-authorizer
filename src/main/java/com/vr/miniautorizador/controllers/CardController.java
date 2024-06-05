@@ -1,9 +1,9 @@
-package com.vr.miniautorizador.controller;
+package com.vr.miniautorizador.controllers;
 
-import com.vr.miniautorizador.dto.NewCardRequestDTO;
-import com.vr.miniautorizador.service.CardService;
-import com.vr.miniautorizador.service.exceptions.CardAlreadyExistsException;
-import com.vr.miniautorizador.service.exceptions.CardNotFoundException;
+import com.vr.miniautorizador.controllers.dto.NewCardRequestDTO;
+import com.vr.miniautorizador.services.CardService;
+import com.vr.miniautorizador.services.exceptions.CardAlreadyExistsException;
+import com.vr.miniautorizador.services.exceptions.CardNotFoundException;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

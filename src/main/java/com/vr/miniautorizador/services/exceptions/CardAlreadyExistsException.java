@@ -1,4 +1,4 @@
-package com.vr.miniautorizador.service.exceptions;
+package com.vr.miniautorizador.services.exceptions;
 
 public class CardAlreadyExistsException extends RuntimeException {
     public CardAlreadyExistsException() {

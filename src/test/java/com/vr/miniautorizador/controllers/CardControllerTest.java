@@ -1,9 +1,9 @@
-package com.vr.miniautorizador.controller;
+package com.vr.miniautorizador.controllers;
 
-import com.vr.miniautorizador.dto.NewCardRequestDTO;
-import com.vr.miniautorizador.service.CardService;
-import com.vr.miniautorizador.service.TransactionService;
-import com.vr.miniautorizador.service.exceptions.CardAlreadyExistsException;
+import com.vr.miniautorizador.controllers.dto.NewCardRequestDTO;
+import com.vr.miniautorizador.services.CardService;
+import com.vr.miniautorizador.services.TransactionService;
+import com.vr.miniautorizador.services.exceptions.CardAlreadyExistsException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -21,7 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-public class CardControllerTest {
+class CardControllerTest {
 
     private MockMvc mockMvc;
 
@@ -41,21 +41,21 @@ public class CardControllerTest {
     }
 
     @Test
-    public void createCard_withValidData_shouldReturn201() throws Exception {
+    void createCard_withValidData_shouldReturn201() throws Exception {
         when(cardService.create(newCardRequestDTO)).thenReturn(newCardRequestDTO);
         executePost(
                 status().isCreated());
     }
 
     @Test
-    public void createCard_withExistingCard_shouldReturn422() throws Exception {
+    void createCard_withExistingCard_shouldReturn422() throws Exception {
         when(cardService.create(newCardRequestDTO)).thenThrow(new CardAlreadyExistsException());
         executePost(
                 status().isUnprocessableEntity());
     }
 
     @Test
-    public void getBalance_ofValidCard_shouldReturn200() throws Exception {
+    void getBalance_ofValidCard_shouldReturn200() throws Exception {
         when(cardService.getBalance("6549873025634501")).thenReturn(500.0);
         this.mockMvc.perform(MockMvcRequestBuilders
                         .get("/cartoes/6549873025634501")

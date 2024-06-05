@@ -1,5 +1,5 @@
-package com.vr.miniautorizador.repository;
-import com.vr.miniautorizador.model.Card;
+package com.vr.miniautorizador.repositories;
+import com.vr.miniautorizador.models.Card;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

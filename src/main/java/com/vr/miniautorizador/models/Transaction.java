@@ -1,4 +1,4 @@
-package com.vr.miniautorizador.model;
+package com.vr.miniautorizador.models;
 
 import jakarta.persistence.*;
 

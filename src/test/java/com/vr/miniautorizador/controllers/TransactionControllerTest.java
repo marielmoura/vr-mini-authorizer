@@ -1,11 +1,11 @@
-package com.vr.miniautorizador.controller;
+package com.vr.miniautorizador.controllers;
 
-import com.vr.miniautorizador.dto.TransactionRequestDTO;
-import com.vr.miniautorizador.service.TransactionService;
-import com.vr.miniautorizador.service.exceptions.CardNotFoundException;
-import com.vr.miniautorizador.service.exceptions.InsufficientCardBalanceException;
-import com.vr.miniautorizador.service.exceptions.InvalidCardPasswordException;
-import com.vr.miniautorizador.service.exceptions.TransactionAmountZeroException;
+import com.vr.miniautorizador.controllers.dto.NewTransactionRequestDTO;
+import com.vr.miniautorizador.services.TransactionService;
+import com.vr.miniautorizador.services.exceptions.CardNotFoundException;
+import com.vr.miniautorizador.services.exceptions.InsufficientCardBalanceException;
+import com.vr.miniautorizador.services.exceptions.InvalidCardPasswordException;
+import com.vr.miniautorizador.services.exceptions.TransactionAmountZeroException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
-public class TransactionControllerTest {
+class TransactionControllerTest {
 
     private MockMvc mockMvc;
     private String jsonRequest;
@@ -40,31 +40,31 @@ public class TransactionControllerTest {
     }
 
     @Test
-    public void whenTransactionAmountIsZero_thenReturnValorInvalido() throws Exception, InsufficientCardBalanceException, TransactionAmountZeroException, InvalidCardPasswordException {
-        when(transactionService.create(any(TransactionRequestDTO.class))).thenThrow(new TransactionAmountZeroException());
+    void whenTransactionAmountIsZero_thenReturnValorInvalido() throws Exception, InsufficientCardBalanceException, TransactionAmountZeroException, InvalidCardPasswordException {
+        when(transactionService.create(any(NewTransactionRequestDTO.class))).thenThrow(new TransactionAmountZeroException());
         assertTransactionResponse(jsonRequest, "VALOR_INVALIDO");
     }
 
     @Test
-    public void whenCardNotFound_thenReturnCartaoInexistente() throws Exception, InsufficientCardBalanceException, TransactionAmountZeroException, InvalidCardPasswordException {
-        when(transactionService.create(any(TransactionRequestDTO.class))).thenThrow(new CardNotFoundException());
+    void whenCardNotFound_thenReturnCartaoInexistente() throws Exception, InsufficientCardBalanceException, TransactionAmountZeroException, InvalidCardPasswordException {
+        when(transactionService.create(any(NewTransactionRequestDTO.class))).thenThrow(new CardNotFoundException());
         assertTransactionResponse(jsonRequest, "CARTAO_INEXISTENTE");
     }
 
     @Test
-    public void whenInvalidCardPassword_thenReturnSenhaInvalida() throws Exception, InsufficientCardBalanceException, TransactionAmountZeroException, InvalidCardPasswordException {
-        when(transactionService.create(any(TransactionRequestDTO.class))).thenThrow(new InvalidCardPasswordException());
+    void whenInvalidCardPassword_thenReturnSenhaInvalida() throws Exception, InsufficientCardBalanceException, TransactionAmountZeroException, InvalidCardPasswordException {
+        when(transactionService.create(any(NewTransactionRequestDTO.class))).thenThrow(new InvalidCardPasswordException());
         assertTransactionResponse(jsonRequest, "SENHA_INVALIDA");
     }
 
     @Test
-    public void whenInsufficientCardBalance_thenReturnSaldoInsuficiente() throws Exception, InsufficientCardBalanceException, TransactionAmountZeroException, InvalidCardPasswordException {
-        when(transactionService.create(any(TransactionRequestDTO.class))).thenThrow(new InsufficientCardBalanceException());
+    void whenInsufficientCardBalance_thenReturnSaldoInsuficiente() throws Exception, InsufficientCardBalanceException, TransactionAmountZeroException, InvalidCardPasswordException {
+        when(transactionService.create(any(NewTransactionRequestDTO.class))).thenThrow(new InsufficientCardBalanceException());
         assertTransactionResponse(jsonRequest, "SALDO_INSUFICIENTE");
     }
 
     @Test
-    public void whenCardTransactionIsSuccessful_thenReturnOk() throws Exception {
+    void whenCardTransactionIsSuccessful_thenReturnOk() throws Exception {
         assertTransactionResponse(jsonRequest, "OK", true);
     }
 

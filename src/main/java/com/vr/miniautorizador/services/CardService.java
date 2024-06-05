@@ -1,14 +1,14 @@
-package com.vr.miniautorizador.service;
+package com.vr.miniautorizador.services;
 
-import com.vr.miniautorizador.dto.NewCardRequestDTO;
-import com.vr.miniautorizador.model.Card;
-import com.vr.miniautorizador.model.Transaction;
-import com.vr.miniautorizador.repository.CardRepository;
-import com.vr.miniautorizador.repository.TransactionRepository;
-import com.vr.miniautorizador.service.exceptions.CardAlreadyExistsException;
-import com.vr.miniautorizador.service.exceptions.CardNotFoundException;
-import com.vr.miniautorizador.service.exceptions.InvalidCardNumberException;
-import com.vr.miniautorizador.service.validator.CreditCardValidator;
+import com.vr.miniautorizador.controllers.dto.NewCardRequestDTO;
+import com.vr.miniautorizador.models.Card;
+import com.vr.miniautorizador.models.Transaction;
+import com.vr.miniautorizador.repositories.CardRepository;
+import com.vr.miniautorizador.repositories.TransactionRepository;
+import com.vr.miniautorizador.services.exceptions.CardAlreadyExistsException;
+import com.vr.miniautorizador.services.exceptions.CardNotFoundException;
+import com.vr.miniautorizador.services.exceptions.InvalidCardNumberException;
+import com.vr.miniautorizador.services.validators.CreditCardValidator;
 import jakarta.transaction.Transactional;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;

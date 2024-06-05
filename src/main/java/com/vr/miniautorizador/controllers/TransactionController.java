@@ -1,12 +1,15 @@
-package com.vr.miniautorizador.controller;
+package com.vr.miniautorizador.controllers;
 
-import com.vr.miniautorizador.dto.TransactionRequestDTO;
-import com.vr.miniautorizador.service.exceptions.*;
-import com.vr.miniautorizador.service.TransactionService;
+import com.vr.miniautorizador.controllers.dto.NewTransactionRequestDTO;
+import com.vr.miniautorizador.services.TransactionService;
+import com.vr.miniautorizador.services.exceptions.*;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/transacoes")
@@ -19,7 +22,7 @@ public class TransactionController {
     }
 
     @PostMapping
-    public ResponseEntity<?> create(@Valid @RequestBody TransactionRequestDTO transactionCandidate) {
+    public ResponseEntity<String> create(@Valid @RequestBody NewTransactionRequestDTO transactionCandidate) {
         try {
             transactionService.create(transactionCandidate);
             return new ResponseEntity<>("OK", HttpStatus.CREATED);

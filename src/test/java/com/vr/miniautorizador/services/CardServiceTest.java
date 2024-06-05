@@ -1,11 +1,11 @@
-package com.vr.miniautorizador.service;
+package com.vr.miniautorizador.services;
 
-import com.vr.miniautorizador.dto.NewCardRequestDTO;
-import com.vr.miniautorizador.model.Card;
-import com.vr.miniautorizador.repository.CardRepository;
-import com.vr.miniautorizador.repository.TransactionRepository;
-import com.vr.miniautorizador.service.exceptions.CardAlreadyExistsException;
-import com.vr.miniautorizador.service.exceptions.InvalidCardNumberException;
+import com.vr.miniautorizador.controllers.dto.NewCardRequestDTO;
+import com.vr.miniautorizador.models.Card;
+import com.vr.miniautorizador.repositories.CardRepository;
+import com.vr.miniautorizador.repositories.TransactionRepository;
+import com.vr.miniautorizador.services.exceptions.CardAlreadyExistsException;
+import com.vr.miniautorizador.services.exceptions.InvalidCardNumberException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,7 +23,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class CardServiceTest {
+class CardServiceTest {
 
     private static final String VALID_CARD_NUMBER = "4810239597849161";
     private static final String INVALID_CARD_NUMBER = "481023959784916";
@@ -51,14 +51,14 @@ public class CardServiceTest {
     }
 
     @Test
-    public void shouldCreateNewCard() {
+    void shouldCreateNewCard() {
         when(cardRepository.save(any(Card.class))).thenReturn(validCard);
         Card newCardCreated = cardService.create(newValidCardRequest).toModel();
         assertEquals(newValidCardRequest.toModel(), newCardCreated);
     }
 
     @Test
-    public void shouldNotCreateInvalidNewCard() {
+    void shouldNotCreateInvalidNewCard() {
         NewCardRequestDTO newInvalidCardRequest = new NewCardRequestDTO(INVALID_CARD_NUMBER, VALID_PASSWORD);
         assertThatExceptionOfType(InvalidCardNumberException.class)
                 .isThrownBy(() -> cardService.create(newInvalidCardRequest))
@@ -66,7 +66,7 @@ public class CardServiceTest {
     }
 
     @Test
-    public void shouldNotCreateCardAlreadyExists() {
+    void shouldNotCreateCardAlreadyExists() {
         when(cardRepository.findByNumber(anyString())).thenReturn(Optional.of(validCard));
         assertThatExceptionOfType(CardAlreadyExistsException.class)
                 .isThrownBy(() -> cardService.create(newValidCardRequest))
@@ -74,14 +74,14 @@ public class CardServiceTest {
     }
 
     @Test
-    public void shouldFindValidCard() {
+    void shouldFindValidCard() {
         when(cardRepository.findByNumber(VALID_CARD_NUMBER)).thenReturn(Optional.ofNullable(validCard));
         Card foundCard = cardService.findValid(VALID_CARD_NUMBER);
         assertEquals(validCard, foundCard);
     }
 
     @Test
-    public void shouldGetBalance() {
+    void shouldGetBalance() {
         when(transactionRepository.sumAmountsByCardNumber(VALID_CARD_NUMBER)).thenReturn(100.0);
         when(cardRepository.findByNumber(anyString())).thenReturn(Optional.of(validCard));
         Double cardBalance = cardService.getBalance(VALID_CARD_NUMBER);

@@ -1,6 +1,6 @@
-package com.vr.miniautorizador.dto;
+package com.vr.miniautorizador.controllers.dto;
 
-import com.vr.miniautorizador.model.Card;
+import com.vr.miniautorizador.models.Card;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import org.hibernate.validator.constraints.CreditCardNumber;

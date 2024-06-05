@@ -1,4 +1,4 @@
-package com.vr.miniautorizador.service.exceptions;
+package com.vr.miniautorizador.services.exceptions;
 
 public class InvalidCardPasswordException extends RuntimeException {
     public InvalidCardPasswordException() {

@@ -1,8 +1,8 @@
-package com.vr.miniautorizador.model;
+package com.vr.miniautorizador.models;
 
-import com.vr.miniautorizador.dto.NewCardRequestDTO;
-import com.vr.miniautorizador.dto.TransactionRequestDTO;
-import com.vr.miniautorizador.service.exceptions.InvalidCardPasswordException;
+import com.vr.miniautorizador.controllers.dto.NewCardRequestDTO;
+import com.vr.miniautorizador.controllers.dto.NewTransactionRequestDTO;
+import com.vr.miniautorizador.services.exceptions.InvalidCardPasswordException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -38,8 +38,8 @@ public class Card {
         return new NewCardRequestDTO(number, new String(Base64.getDecoder().decode(password), StandardCharsets.UTF_8));
     }
 
-    public void checkPasswordValidity(TransactionRequestDTO transactionRequestDTO) throws InvalidCardPasswordException {
-        String encodedPasswordToCompare = Base64.getEncoder().encodeToString(transactionRequestDTO.getPassword().getBytes(StandardCharsets.UTF_8));
+    public void checkPasswordValidity(NewTransactionRequestDTO newTransactionRequestDTO) throws InvalidCardPasswordException {
+        String encodedPasswordToCompare = Base64.getEncoder().encodeToString(newTransactionRequestDTO.getPassword().getBytes(StandardCharsets.UTF_8));
         if (!this.password.equals(encodedPasswordToCompare)){
             throw new InvalidCardPasswordException();
         }
@@ -54,5 +54,10 @@ public class Card {
         Card card = (Card) obj;
         return Objects.equals(number, card.number) &&
                 Objects.equals(password, card.password);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(number, password);
     }
 }
